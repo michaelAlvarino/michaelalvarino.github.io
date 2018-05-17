@@ -9,14 +9,16 @@ One of the most frustrating problems I run into when creating and prototyping ma
 In this post I will document my experience using two typed languages, c++ and Go.
 
 ### Why c++?
-c++ speaks for itself. It is an extremely performant and low-level language which provides enough abstraction for developers to be productive. Another reason I chose c++ was curiosity. I have never truly dealt with memory management or built a substantial c++ application. As we will see, I still can not say I have done either of those things.
+c++ speaks for itself. It is an extremely performant and low-level language which provides enough abstraction for developers to be productive. Another reason I chose c++ was curiosity. I have never truly dealt with memory management in c++ (I did a little c memory management during my operating systems course while working on the Linux kernel to build filesystems, schedulers, modules etc) or built a substantial c++ application. As we will see, I still can not say I have done either of those things.
+
 The machine learning community around c++ is very well established, there are many linear algebra libraries and statistical packages with every statistical distribution your heart could desire.
 
-### why Go?
-Go is, by now, fairly well known and has had some statistical and linear algebra libraries built to support my endeavors. More importantly however, Go fixed several of my biggest issues and pain points in developing c++, while maintaining a significant performance improvement over python.
+### Why go?
+go is, by now, fairly well known and has had some statistical and linear algebra libraries built to support my endeavors. More importantly however, go fixed several of my biggest issues and pain points in developing c++, while maintaining a significant performance improvement over python.
 
 ### The c++ Task
 As a Machine Learning engineer c++ and many of the problems it introduces were very new to me. First and foremost I was worried about having to learn about working with pointers and memory management. Also, I was worried about using outside libraries, building them, and packaging my final product. As we will see, some of these concerns ended up more relevant than others.
+
 The model I chose to implement was the extremely simple and well-known beta-bernoulli model. In this model we have a set of data points
 
 $$X, n \in (1, ... , N)$$
@@ -35,7 +37,7 @@ $$P(\Theta | D) = P(D| \Theta) P(\Theta) = \prod\Theta^x(1-\Theta)^{1 - x} P(\Th
 
 $$= \Theta^{\alpha + \sum x - 1}(1-\Theta)^{\beta + N - 1 - \sum x}$$
 
-Looking at this closely one could recognize that all we need to get from our data are two things.
+Looking at this closely we only need two things from our data.
 
 1. The number of data points $$N$$
 1. The number of successes $$\sum x$$
@@ -49,8 +51,8 @@ I looked into several library managers for c++ but all seemed to either have lim
 
 What I wanted was a language as simple as c, in which I could be as productive as c++, but with a very simple library management tool.
 
-### The Go Task
-The Go task I chose was very similar, in fact it was an abstraction upon the previous model to be able to predict more categories than a 0/1 random variable. Since our random variable is now $$x \in 0, 1, 2, ..., N$$ we know it is sampled from a categorical distribution. Further, we need  a prior over our category probabilities which is a valid distribution. It so happens that the Dirichlet distribution is the conjugate prior to the categorical distribution. This model is especially well described in Kevin Murphy's [Machine Learning](https://www.amazon.com/Machine-Learning-Probabilistic-Perspective-Computation/dp/0262018020/ref=sr_1_2?ie=UTF8&qid=1526585875&sr=8-2&keywords=machine+learning+a+probabilistic+perspective) textbook in chapter 3.4.
+### The go Task
+The go task I chose was very similar, in fact it was an abstraction upon the previous model to be able to predict more categories than a 0/1 random variable. Since our random variable is now $$x \in 0, 1, 2, ..., N$$ we know it is sampled from a categorical distribution. Further, we need  a prior over our category probabilities which is a valid distribution. It so happens that the Dirichlet distribution is the conjugate prior to the categorical distribution. This model is especially well described in Kevin Murphy's [Machine Learning](https://www.amazon.com/Machine-Learning-Probabilistic-Perspective-Computation/dp/0262018020/ref=sr_1_2?ie=UTF8&qid=1526585875&sr=8-2&keywords=machine+learning+a+probabilistic+perspective) textbook in chapter 3.4.
 
 $$likelihood = P(D | \Theta) = \prod \theta^{N_k}$$
 
@@ -63,9 +65,9 @@ $$ = \prod \theta^{N_k + \alpha - 1}$$
 
 This is another simple model, in this case we need only $$k$$ counts to determine the parameters of our Dirichlet distribution whose sample will be the parameters of our categorical distribution. Really we can use $$k-1$$ counts.
 
-This finally brings us to Go. Initially I had read some [chat threads](https://www.reddit.com/r/golang/comments/79ggpf/machine_learning_with_go/) about using golang for machine learning and it seems like it's mostly used for deployment in production. This solves my first issue because it indicates Go is a good language to create reliable machine learning applications in and was the initial reason for my venture into typed languages for machine learning.
+This finally brings us to go. Initially I had read some [chat threads](https://www.reddit.com/r/golang/comments/79ggpf/machine_learning_with_go/) about using golang for machine learning and it seems like it's mostly used for deployment in production. This solves my first issue because it indicates go is a good language to create reliable machine learning applications in and was the initial reason for my venture into typed languages for machine learning.
 
-Reading the [Golang tour](https://tour.golang.org/welcome/1) and reading the [go command docs](https://golang.org/cmd/go/) I quickly found out that go is extremely opinionated in project structure and source code organization. In go projects all source code for all projects are kept in the users `go` workspace. To use an external library programmers must use the command line utility `go get github.com/username/project/...` to retrieve source code from a repository (repos other than github are also supported obviously). This command downloads the original source code from the project to your workspace in order to be imported to your source code, then compiled with `go build`. Further, `go install` will build your project and place the executable in your `$GOPATH/bin` directory. 
+Reading the [golang tour](https://tour.golang.org/welcome/1) and reading the [go command docs](https://golang.org/cmd/go/) I quickly found out that go is extremely opinionated in project structure and source code organization. In go projects all source code for all projects are kept in the users `go` workspace. To use an external library programmers must use the command line utility `go get github.com/username/project/...` to retrieve source code from a repository (repos other than github are also supported obviously). This command downloads the original source code from the project to your workspace in order to be imported to your source code, then compiled with `go build`. Further, `go install` will build your project and place the executable in your `$GOPATH/bin` directory. 
 
 This was all in stark contrast and extremely opinionated when compared to c++. In c++ libraries are system dependent and installed into `/usr/includes`, or `/usr/local/includes` directories, or sometimes just header files copied into project source code. The resulting binary can also be placed in any of `/usr/bin`, `/usr/local/bin`, or any other location on your `PATH` environment variable.
 
@@ -75,6 +77,6 @@ One downside to go is my personal productivity level in it. Currently I am not e
 
 ### In Conclusion
 
-c/c++ are extremely powerful and performant languages in the hands of the right developer. Unfortunately I found that the variety of best practices, system dependence, and breadth of knowledge necessary for simple tasks too big of a barrier to entry for the language. Go provides a similar language which is much more opinionated, has significant performance improvements over python, and a good community around Machine Learning applications.
+c++ is extremely powerful and performant in the hands of the right developer. Unfortunately I found that the variety of best practices, system dependence, and breadth of knowledge necessary for simple tasks too big of a barrier to entry for the language. go provides a similar language which is much more opinionated, has significant performance improvements over python, and a good community around Machine Learning applications.
 
 Going forward with side projects and small machine learning tasks, I intend to use Python to prototype algorithms and go to improve performance where possible. One interesting task would be improving the performance of my [Efficient Thompson Sampling for Probabilistic Matrix Factorization](https://github.com/michaelAlvarino/ParticleThompsonSamplingMAB). Before attempting that I want to continue on a simple progression through some machine learning algorithms and common bayesian models like some different naive bayes classifiers.
