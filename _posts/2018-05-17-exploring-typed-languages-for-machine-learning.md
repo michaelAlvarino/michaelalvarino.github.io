@@ -1,5 +1,5 @@
 ---
-excerpt: TODO
+excerpt: I explore c++ and go as typed languages for implementing machine learning algorithms to improve code reliability, performance, and to satisfy personal curiosity
 ---
 
 ### Why Not Python?
